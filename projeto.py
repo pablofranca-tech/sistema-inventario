@@ -1,3 +1,4 @@
+# update for linguage detection
 import os
 import tkinter as tk
 from tkinter import messagebox, ttk
