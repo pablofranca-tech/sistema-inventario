@@ -1,4 +1,3 @@
-# update for linguage detection
 import os
 import tkinter as tk
 from tkinter import messagebox, ttk
@@ -12,25 +11,16 @@ import logging
 from PIL import Image, ImageTk
 import threading
 from tkinter.font import Font
-import sys
 
-# Caminho seguro para salvar o log no mesmo local do .exe ou .py
-if getattr(sys, 'frozen', False):
-    app_path = os.path.dirname(sys.executable)
-else:
-    app_path = os.path.dirname(__file__)
-
-log_path = os.path.join(app_path, "sistema_inventario.log")
-
-import logging
+# Configuração de logging
 logging.basicConfig(
-    filename=log_path,
+    filename='sistema_multinacional.log',
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     filemode='a'
 )
 
-class SistemaInventario:
+class SistemaMultinacional:
     def __init__(self):
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
@@ -43,7 +33,7 @@ class SistemaInventario:
         self.pasta_projeto = os.path.dirname(os.path.abspath(__file__))
         
         # Bancos de dados
-        self.arquivo_excel_campinas = os.path.join(self.pasta_projeto, "Campinas", "dados_produtos_campinas.xlsx")
+        self.arquivo_excel_campinas = os.path.join(self.pasta_projeto, "CAMPINAS", "dados_produtos_campinas.xlsx")
         self.arquivo_excel_mafra = os.path.join(self.pasta_projeto, "MAFRA", "dados_produtos_mafra.xlsx")
         self.arquivo_excel_atual = None
         
@@ -80,11 +70,10 @@ class SistemaInventario:
         
         # Usuários e plantas
         self.usuarios = {
-            "operador": {"senha": "123", "planta": "AMBAS"},
-            "Operadormafra": {"senha": "456", "planta": "AMBAS"},
-            "operadorCampinas": {"senha": "789", "planta": "AMBAS"},
-            "operador1": {"senha": "111", "planta": "BANDAG"},
-            "operador2": {"senha": "222", "planta": "MAFRA"}
+            "admin": {"senha": "admin123", "planta": "AMBAS"},
+            "supervisor": {"senha": "sup456", "planta": "AMBAS"},
+            "operador1": {"senha": "oper123", "planta": "CAMPINAS"},
+            "operador2": {"senha": "oper456", "planta": "MAFRA"}
         }
         
         self.inicializar_excel()
@@ -126,7 +115,7 @@ class SistemaInventario:
             messagebox.showerror("Erro", f"Falha ao ler arquivos de produção/retrabalho: {str(e)}")
 
     def inicializar_excel(self):
-        for planta, arquivo in [("Campinas", self.arquivo_excel_campinas), ("MAFRA", self.arquivo_excel_mafra)]:
+        for planta, arquivo in [("CAMPINAS", self.arquivo_excel_campinas), ("MAFRA", self.arquivo_excel_mafra)]:
             pasta = os.path.dirname(arquivo)
             if not os.path.exists(pasta):
                 os.makedirs(pasta)
@@ -138,7 +127,7 @@ class SistemaInventario:
                 df.to_excel(arquivo, index=False, engine="openpyxl")
 
     def definir_arquivo_excel_atual(self):
-        if self.planta_selecionada == "Campinas":
+        if self.planta_selecionada == "CAMPINAS":
             self.arquivo_excel_atual = self.arquivo_excel_campinas
         elif self.planta_selecionada == "MAFRA":
             self.arquivo_excel_atual = self.arquivo_excel_mafra
@@ -154,7 +143,7 @@ class SistemaInventario:
     
     def tela_login(self):
         self.login_window = ctk.CTk()
-        self.login_window.title("Multinacional - Login")
+        self.login_window.title("MULTINACIONAL - Login")
         self.login_window.geometry("800x600")
         self.login_window.configure(fg_color="white")
         
@@ -163,7 +152,7 @@ class SistemaInventario:
         
         lbl_titulo = ctk.CTkLabel(
             frame_login, 
-            text="Sistema Inventário", 
+            text="MULTINACIONAL", 
             font=ctk.CTkFont(size=28, weight="bold"),
             text_color="#002b5c"
         )
@@ -171,7 +160,7 @@ class SistemaInventario:
         
         lbl_subtitulo = ctk.CTkLabel(
             frame_login, 
-            text="Multinacional", 
+            text="SISTEMA DE INVENTÁRIO", 
             font=ctk.CTkFont(size=16),
             text_color="#666666"
         )
@@ -233,8 +222,8 @@ class SistemaInventario:
             planta_usuario = self.usuarios[usuario]["planta"]
             
             if planta_usuario == "AMBAS":
-                self.combo_planta.configure(values=["Campinas", "MAFRA"], state="readonly")
-                self.combo_planta.set("Selecione...")
+                self.combo_planta.configure(values=["CAMPINAS", "MAFRA"], state="readonly")
+                self.combo_planta.set("CAMPINAS")
             else:
                 self.combo_planta.configure(values=[planta_usuario], state="readonly")
                 self.combo_planta.set(planta_usuario)
@@ -267,7 +256,7 @@ class SistemaInventario:
 
     def tela_inicial(self):
         self.root_menu = tk.Tk()
-        self.root_menu.title(f"Campinas - {self.usuario_logado} - {self.planta_selecionada}")
+        self.root_menu.title(f"MULTINACIONAL - {self.usuario_logado} - {self.planta_selecionada}")
         self.root_menu.state('zoomed')
         
         header = tk.Frame(self.root_menu, bg="#002b5c", height=70)
@@ -287,7 +276,7 @@ class SistemaInventario:
         
         tk.Label(
             header,
-            text=f"Multinacional - {self.planta_selecionada}",
+            text=f"MULTINACIONAL - {self.planta_selecionada}",
             font=("Arial", 22, "bold"),
             fg="white",
             bg="#002b5c"
@@ -345,7 +334,7 @@ class SistemaInventario:
         
         self.btn_fechar = tk.Button(
             sidebar,
-            text="FECHAR PALETE",
+            text="FECHAR PALETE [F3]",
             command=self.fechar_palete,
             bg="#002b5c",
             fg="white",
@@ -356,7 +345,7 @@ class SistemaInventario:
         
         tk.Button(
             sidebar,
-            text="LIMPAR CAMPOS ",
+            text="LIMPAR CAMPOS [F5]",
             command=self.limpar_campos,
             bg="#6c757d",
             fg="white",
@@ -415,7 +404,7 @@ class SistemaInventario:
         bg_color = "#f8f9fa"  # Cor de fundo mais clara
         fg_color = "#212529"  # Cor do texto mais escura
         font_size = 12  # Tamanho maior da fonte
-        item_height = 50  # Altura maior para cada item
+        item_height = 40  # Altura maior para cada item
         item_width = 30  # Largura maior para cada item
         radius = 15  # Raio maior para bordas arredondadas
         
@@ -467,7 +456,7 @@ class SistemaInventario:
         # Título da coluna direita
         lbl_right_title = tk.Label(
             col_right, 
-            text="CÓDIGOS LIDOS", 
+            text="CÓDIGOS A LER", 
             font=("Arial", 12, "bold"), 
             bg="#002b5c", 
             fg="white",
@@ -522,8 +511,8 @@ class SistemaInventario:
         bg_color = "#f8f9fa"
         font_size = 12
         item_height = 2  # Altura em linhas
-        item_width = 20  # Largura em caracteres
-        radius = 25  # Raio para bordas arredondadas
+        item_width = 25  # Largura em caracteres
+        radius = 15  # Raio para bordas arredondadas
         
         # Adiciona o palet como primeiro item se existir
         if hasattr(self, 'etiqueta_palet_atual') and self.etiqueta_palet_atual:
@@ -580,15 +569,15 @@ class SistemaInventario:
                 self.labels_codigos[col_idx].append(lbl)
 
     def determinar_tipo_etiqueta(self, codigo):
-        """Determina se a etiqueta é CAMPINAS (C) ou MAFRA (U)"""
-        if codigo.startswith('B'):
-            return "Campinas"
-        elif codigo.startswith('U'):
+        """Determina se a etiqueta é CAMPINAS (C) ou MAFRA (M)"""
+        if codigo.startswith('C'):
+            return "CAMPINAS"
+        elif codigo.startswith('M'):
             return "MAFRA"
         return None
 
     def validar_formato_etiqueta(self, codigo, tipo_etq, tipo):
-        if tipo_etq == "Campinas":
+        if tipo_etq == "CAMPINAS":
             if tipo == "PALETE":
                 return (len(codigo) == 10 and codigo[1:6].isdigit() and codigo[6] == 'P' and codigo[7:].isdigit())
             else:
@@ -1469,7 +1458,7 @@ class SistemaInventario:
                 'primary': '#002b5c',    # Dark blue
                 'success': '#28a745',    # Green
                 'danger': '#dc3545',     # Red
-                'secondary': "#28a745",  # Green
+                'secondary': '#6c757d',  # Gray
                 'warning': '#ffc107'     # Yellow
             }
             
@@ -1683,4 +1672,4 @@ class SistemaInventario:
             self.root_menu.after(self.auto_save_interval * 1000, self.agendar_auto_save)
 
 if __name__ == "__main__":
-    app = SistemaInventario()
+    app = SistemaMultinacional()
